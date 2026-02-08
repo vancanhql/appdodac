@@ -1,53 +1,46 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebApp Đo Đạc Vườn Cây</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebApp Đo Đạc Vườn Cây</title>
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2e7d32">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2e7d32">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css">
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 <div class="app-container">
 
-  <header>🌱 ỨNG DỤNG ĐO ĐẠC VƯỜN CÂY</header>
+  <header>🌱 WEBAPP ĐO ĐẠC VƯỜN CÂY</header>
 
   <div id="control-panel">
     <input id="tenLo" placeholder="Tên lô / Mã lô">
 
     <button onclick="batVe()" class="btn-action">
-      <svg viewBox="0 0 24 24" class="icon">
-        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
-      </svg>
-      <span>Vẽ tay</span>
+      <span>✏️</span><small>Vẽ tay</small>
     </button>
 
     <button onclick="chonGPS()" class="btn-action">
-      <svg viewBox="0 0 24 24" class="icon">
-        <path d="M12 8a4 4 0 100 8 4 4 0 000-8zm9 3h-2.07a7.004 7.004 0 00-5.93-5.93V3h-2v2.07A7.004 7.004 0 005.07 11H3v2h2.07a7.004 7.004 0 005.93 5.93V21h2v-2.07a7.004 7.004 0 005.93-5.93H21v-2z"/>
-      </svg>
-      <span>Đo GPS</span>
+      <span>◎</span><small>Đo GPS</small>
     </button>
 
-    <button id="btnStartGPS" onclick="batDauGPS()" class="btn-action" style="display:none">
-      ▶ <span>Bắt đầu</span>
+    <button id="btnStartGPS" class="btn-action" style="display:none"
+            onclick="batDauGPS()">
+      ▶<small>Bắt đầu</small>
     </button>
 
-    <button id="btnFinishGPS" onclick="ketThucGPS()" class="btn-action danger" style="display:none">
-      ✔ <span>Hoàn thành</span>
+    <button id="btnFinishGPS" class="btn-action danger" style="display:none"
+            onclick="ketThucGPS()">
+      ✔<small>Hoàn thành</small>
     </button>
 
     <button onclick="xuatExcel()" class="btn-action">
-      <svg viewBox="0 0 24 24" class="icon">
-        <path d="M5 20h14V8l-6-6H5v18zm8-13h5l-5-5v5z"/>
-      </svg>
-      <span>Excel</span>
+      ⧉<small>Excel</small>
     </button>
   </div>
 
@@ -55,10 +48,10 @@
 
   <div id="result">
     <table>
-      <tr><th>Danh mục</th><th>Giá trị</th></tr>
-      <tr><td>📐 Diện tích (ha)</td><td id="rsArea">-</td></tr>
-      <tr><td>🔄 Chu vi (m)</td><td id="rsPerimeter">-</td></tr>
-      <tr><td>📏 Chiều dài (m)</td><td id="rsLength">-</td></tr>
+      <tr><th>Chỉ tiêu</th><th>Giá trị</th></tr>
+      <tr><td>Diện tích (ha)</td><td id="rsArea">-</td></tr>
+      <tr><td>Chu vi (m)</td><td id="rsPerimeter">-</td></tr>
+      <tr><td>Chiều dài (m)</td><td id="rsLength">-</td></tr>
     </table>
   </div>
 
@@ -67,7 +60,9 @@
   </footer>
 </div>
 
-<button id="btnInstall" style="display:none">⬇️ Cài đặt</button>
+<button id="btnInstall" class="install-btn" style="display:none">
+  ⬇️ Cài đặt
+</button>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
