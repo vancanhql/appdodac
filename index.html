@@ -29,11 +29,12 @@
   <span>Vẽ tay</span>
 </button>
 
-<button onclick="batGPS()" class="btn-action">
-  <svg viewBox="0 0 24 24" class="icon">
-    <path d="M12 8a4 4 0 100 8 4 4 0 000-8zm9 3h-2.07a7.004 7.004 0 00-5.93-5.93V3h-2v2.07A7.004 7.004 0 005.07 11H3v2h2.07a7.004 7.004 0 005.93 5.93V21h2v-2.07a7.004 7.004 0 005.93-5.93H21v-2z"/>
-  </svg>
-  <span>Đo GPS</span>
+<button onclick="chonGPS()">🛰️ Đo GPS</button>
+<button id="btnStartGPS" onclick="batDauGPS()" style="display:none">
+  ▶ Bắt đầu
+</button>
+<button id="btnFinishGPS" onclick="ketThucGPS()" style="display:none">
+  ✔ Hoàn thành
 </button>
 
 <button onclick="ketThucGPS()" class="btn-action danger">
@@ -81,3 +82,4 @@
 </button>
 </body>
 </html>
+
