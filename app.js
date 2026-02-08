@@ -1,3 +1,6 @@
+let myLocationMarker = null;
+let myAccuracyCircle = null;
+
 // ===== MAP =====
 const map = L.map("map").setView([11.5, 106.9], 16);
 
@@ -256,3 +259,4 @@ fetch("sw.js")
     const m = t.match(/APP_VERSION\s*=\s*"([^"]+)"/);
     if (m) document.getElementById("appVersion").innerText = "v" + m[1];
   });
+
