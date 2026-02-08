@@ -1,7 +1,7 @@
 /* ===== SERVICE WORKER – AUTO UPDATE ===== */
 
 // 👇 TĂNG SỐ NÀY MỖI LẦN UPDATE APP
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const CACHE_NAME = "do-dac-vuon-cay-" + APP_VERSION;
 
 // Cài đặt service worker mới
@@ -31,3 +31,4 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   // Có thể bổ sung cache sau
 });
+
