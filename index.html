@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2e7d32">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebApp Đo Đạc Vườn Cây</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- APP CONTAINER -->
+<div class="app-container">
+
+  <header>🌱 ỨNG DỤNG ĐO ĐẠC VƯỜN CÂY</header>
+
+  <div id="control-panel">
+    <input id="tenLo" placeholder="Tên lô / Mã lô">
+
+    <button onclick="batVe()" class="btn-action">
+  <svg viewBox="0 0 24 24" class="icon">
+    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+  </svg>
+  <span>Vẽ tay</span>
+</button>
+
+<button onclick="batGPS()" class="btn-action">
+  <svg viewBox="0 0 24 24" class="icon">
+    <path d="M12 8a4 4 0 100 8 4 4 0 000-8zm9 3h-2.07a7.004 7.004 0 00-5.93-5.93V3h-2v2.07A7.004 7.004 0 005.07 11H3v2h2.07a7.004 7.004 0 005.93 5.93V21h2v-2.07a7.004 7.004 0 005.93-5.93H21v-2z"/>
+  </svg>
+  <span>Đo GPS</span>
+</button>
+
+<button onclick="ketThucGPS()" class="btn-action danger">
+  <svg viewBox="0 0 24 24" class="icon">
+    <path d="M6 6h12v12H6z"/>
+  </svg>
+  <span>Kết thúc</span>
+</button>
+
+<button onclick="xuatExcel()" class="btn-action">
+  <svg viewBox="0 0 24 24" class="icon">
+    <path d="M5 20h14V8l-6-6H5v18zm8-13h5l-5-5v5z"/>
+  </svg>
+  <span>Excel</span>
+</button>
+
+  </div>
+
+  <!-- MAP TỰ CO GIÃN -->
+  <div id="map"></div>
+
+  <div id="result">
+    <table>
+      <tr><th>Danh mục</th><th>Giá trị</th></tr>
+      <tr><td>📐 Diện tích (ha)</td><td id="rsArea">-</td></tr>
+      <tr><td>🔄 Chu vi (m)</td><td id="rsPerimeter">-</td></tr>
+      <tr><td>📏 Chiều dài (m)</td><td id="rsLength">-</td></tr>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+<footer class="app-footer">
+  Design by Mr.Canh • <span id="appVersion"></span>
+</footer>
+
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="app.js"></script>
+<button id="btnInstall" style="display:none">
+  ⬇️ Cài đặt
+</button>
+</body>
+</html>
