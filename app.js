@@ -1,6 +1,8 @@
 let myLocationMarker = null;
 let myAccuracyCircle = null;
-
+let gpsWatchId = null;
+let gpsPoints = [];
+let gpsDangDo = false;
 // ===== MAP =====
 const map = L.map("map").setView([11.5, 106.9], 16);
 
@@ -295,4 +297,62 @@ fetch("sw.js")
     if (m) document.getElementById("appVersion").innerText = "v" + m[1];
   });
 
+function chonGPS() {
+  gpsPoints = [];
+  gpsDangDo = false;
+
+  document.getElementById("btnStartGPS").style.display = "block";
+  document.getElementById("btnFinishGPS").style.display = "none";
+
+  alert("Bấm 'Bắt đầu' rồi đi đo ngoài thực địa");
+}
+
+function batDauGPS() {
+  if (!navigator.geolocation) {
+    alert("Thiết bị không hỗ trợ GPS");
+    return;
+  }
+
+  gpsDangDo = true;
+  gpsPoints = [];
+
+  document.getElementById("btnStartGPS").style.display = "none";
+  document.getElementById("btnFinishGPS").style.display = "block";
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      if (!gpsDangDo) return;
+
+      const p = [pos.coords.latitude, pos.coords.longitude];
+      gpsPoints.push(p);
+
+      drawn.clearLayers();
+      L.polyline(gpsPoints, { color: "red" }).addTo(drawn);
+    },
+    () => alert("Lỗi GPS"),
+    { enableHighAccuracy: true }
+  );
+}
+function ketThucGPS() {
+  if (!gpsDangDo) return;
+
+  gpsDangDo = false;
+  navigator.geolocation.clearWatch(gpsWatchId);
+
+  document.getElementById("btnStartGPS").style.display = "none";
+  document.getElementById("btnFinishGPS").style.display = "none";
+
+  drawn.clearLayers();
+  clearLabels();
+
+  const pts = lamThang(gpsPoints);
+
+  const layer = pts.length > 2
+    ? L.polygon(pts, { color: "green" })
+    : L.polyline(pts, { color: "blue" });
+
+  drawn.addLayer(layer);
+  thongKe(layer);
+  hienCanh(layer);
+}
 
