@@ -1,14 +1,7 @@
-html, body {
-  height: 100%;
+body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #e8f5e9;
-}
-
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
 }
 
 header {
@@ -27,38 +20,19 @@ header {
   background: #c8e6c9;
 }
 
-#control-panel input {
-  flex: 100%;
+#control-panel input,
+#control-panel button {
+  flex: 1;
   padding: 8px;
   border-radius: 6px;
   border: none;
 }
 
-.btn-action {
-  flex: 1;
-  background: #2e7d32;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 12px;
+#control-panel button {
+  background: #388e3c;
+  color: white;
 }
 
-.btn-action small {
-  font-size: 10px;
-}
-
-.btn-action.danger {
-  background: #c62828;
-}
-
-#map {
-  flex: 1;
-  min-height: 200px;
-}
 
 #result {
   background: #f1f8e9;
@@ -70,7 +44,8 @@ header {
   border-collapse: collapse;
 }
 
-#result th, #result td {
+#result th,
+#result td {
   border: 1px solid #a5d6a7;
   padding: 6px;
   text-align: center;
@@ -81,21 +56,171 @@ header {
   color: white;
 }
 
-.app-footer {
-  text-align: center;
-  padding: 6px;
+.label {
+  background: rgba(46,125,50,0.9);
+  color: white;
+  padding: 3px 6px;
+  border-radius: 4px;
   font-size: 12px;
-  border-top: 1px solid #a5d6a7;
+  white-space: nowrap;
+}
+/* ===== TÙY CHỈNH THANH FINISH CỦA LEAFLET DRAW ===== */
+
+/* Ẩn vị trí mặc định */
+.leaflet-draw-actions {
+  position: fixed !important;
+  bottom: 10px !important;
+  top: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 6px;
 }
 
-.install-btn {
-  position: fixed;
-  bottom: 70px;
-  right: 12px;
+/* Style nút cho dễ bấm ngoài hiện trường */
+.leaflet-draw-actions a {
+  background: #2e7d32 !important;
+  color: #fff !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  text-decoration: none !important;
+}
+
+/* Hover */
+.leaflet-draw-actions a:hover {
+  background: #1b5e20 !important;
+}
+/* ===== FOOTER ===== */
+.app-footer {
+  text-align: center;
+  padding: 8px 0;
+  font-size: 12px;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-top: 1px solid #a5d6a7;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#map {
+  flex: 1;          /* 👈 then chốt */
+  min-height: 200px;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-top: 1px solid #a5d6a7;
+  flex-shrink: 0;
+}
+/* ===== MAP BUTTONS (ĐỊNH VỊ + BẢN ĐỒ NỀN) ===== */
+.map-btn {
+  width: 36px;
+  height: 36px;
   background: #2e7d32;
   color: white;
   border: none;
-  border-radius: 50px;
-  padding: 10px 14px;
-  z-index: 9999;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.map-btn:hover {
+  background: #1b5e20;
+}
+
+/* Giữ khoảng cách với zoom */
+.leaflet-top.leaflet-right {
+  margin-top: 10px;
+}
+/* ===== ICON ĐỊNH VỊ PHỔ BIẾN (GIỐNG GOOGLE MAPS) ===== */
+.locate-btn {
+  position: relative;
+}
+
+.locate-icon {
+  width: 18px;
+  height: 18px;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.locate-icon::before,
+.locate-icon::after {
+  content: "";
+  position: absolute;
+  background: white;
+}
+
+.locate-icon::before {
+  width: 2px;
+  height: 6px;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.locate-icon::after {
+  width: 6px;
+  height: 2px;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.locate-icon .dot {
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* ===== BUTTON ACTION (ICON CHUẨN) ===== */
+.btn-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 4px;
+  font-size: 12px;
+}
+
+.btn-action .icon {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.btn-action span {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.btn-action.danger {
+  background: #c62828;
 }
