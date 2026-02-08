@@ -1,8 +1,3 @@
-let myLocationMarker = null;
-let myAccuracyCircle = null;
-let gpsWatchId = null;
-let gpsPoints = [];
-let gpsDangDo = false;
 // ===== MAP =====
 const map = L.map("map").setView([11.5, 106.9], 16);
 
@@ -10,16 +5,12 @@ const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 const sat = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 );
-
 sat.addTo(map);
 let base = "sat";
 
 // ===== DATA =====
 const drawn = new L.FeatureGroup().addTo(map);
 let labels = [];
-let gpsWatch = null;
-let gpsPts = [];
-let drawCtrl = null;
 
 // ===== BASE MAP =====
 function doiNen() {
@@ -30,49 +21,39 @@ function doiNen() {
   }
 }
 
-// ===== LOCATION =====
+// ===== LOCATION (GIỐNG GOOGLE MAPS) =====
+let myMarker = null;
+let myCircle = null;
+
 function dinhVi() {
-  if (!navigator.geolocation) {
-    alert("Thiết bị không hỗ trợ GPS");
-    return;
-  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const latlng = [pos.coords.latitude, pos.coords.longitude];
+    const acc = pos.coords.accuracy;
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      const acc = pos.coords.accuracy; // mét
+    map.setView(latlng, 18);
 
-      const latlng = [lat, lng];
-      map.setView(latlng, 18);
+    if (myMarker) map.removeLayer(myMarker);
+    if (myCircle) map.removeLayer(myCircle);
 
-      // Xóa marker cũ
-      if (myLocationMarker) map.removeLayer(myLocationMarker);
-      if (myAccuracyCircle) map.removeLayer(myAccuracyCircle);
+    myMarker = L.circleMarker(latlng, {
+      radius: 8,
+      color: "#1e88e5",
+      fillColor: "#2196f3",
+      fillOpacity: 1
+    }).addTo(map);
 
-      // Chấm vị trí (to, rõ)
-      myLocationMarker = L.circleMarker(latlng, {
-        radius: 8,                 // 👈 TO HƠN
-        color: "#1e88e5",
-        fillColor: "#2196f3",
-        fillOpacity: 1
-      }).addTo(map);
-
-      // Vòng tròn sai số GPS
-      myAccuracyCircle = L.circle(latlng, {
-        radius: acc,
-        color: "#1e88e5",
-        weight: 1,
-        fillColor: "#90caf9",
-        fillOpacity: 0.25
-      }).addTo(map);
-    },
-    () => alert("Không lấy được vị trí GPS"),
-    { enableHighAccuracy: true }
-  );
+    myCircle = L.circle(latlng, {
+      radius: acc,
+      color: "#1e88e5",
+      fillColor: "#90caf9",
+      fillOpacity: 0.25,
+      weight: 1
+    }).addTo(map);
+  }, () => alert("Không lấy được vị trí GPS"), { enableHighAccuracy: true });
 }
 
 // ===== DRAW HAND =====
+let drawCtrl = null;
 function batVe() {
   if (drawCtrl) map.removeControl(drawCtrl);
   drawCtrl = new L.Control.Draw({
@@ -90,11 +71,29 @@ map.on(L.Draw.Event.CREATED, e => {
   hienCanh(e.layer);
 });
 
-// ===== GPS =====
-function batGPS() {
+// ===== GPS MEASURE =====
+let gpsWatch = null;
+let gpsPts = [];
+let gpsDangDo = false;
+
+function chonGPS() {
   gpsPts = [];
+  gpsDangDo = false;
+  document.getElementById("btnStartGPS").style.display = "block";
+  document.getElementById("btnFinishGPS").style.display = "none";
+}
+
+function batDauGPS() {
+  gpsDangDo = true;
+  gpsPts = [];
+
+  document.getElementById("btnStartGPS").style.display = "none";
+  document.getElementById("btnFinishGPS").style.display = "block";
+
   gpsWatch = navigator.geolocation.watchPosition(p => {
+    if (!gpsDangDo) return;
     gpsPts.push([p.coords.latitude, p.coords.longitude]);
+
     drawn.clearLayers();
     L.polyline(gpsPts, { color: "red" }).addTo(drawn);
   }, null, { enableHighAccuracy: true });
@@ -102,8 +101,13 @@ function batGPS() {
 
 function ketThucGPS() {
   if (!gpsWatch) return;
+
   navigator.geolocation.clearWatch(gpsWatch);
   gpsWatch = null;
+  gpsDangDo = false;
+
+  document.getElementById("btnStartGPS").style.display = "none";
+  document.getElementById("btnFinishGPS").style.display = "none";
 
   drawn.clearLayers();
   clearLabels();
@@ -169,7 +173,7 @@ function tong(arr) {
   return d;
 }
 
-// ===== EXCEL (CHUẨN, KHÔNG LỖI) =====
+// ===== EXCEL =====
 function xuatExcel() {
   if (drawn.getLayers().length === 0) {
     alert("Chưa có dữ liệu đo");
@@ -177,8 +181,7 @@ function xuatExcel() {
   }
 
   const layer = drawn.getLayers()[0];
-  const tenLoEl = document.getElementById("tenLo");
-  const tenLo = tenLoEl && tenLoEl.value ? tenLoEl.value.trim() : "Chua_dat_ten";
+  const tenLo = tenLo.value || "Chua_dat_ten";
 
   let area = "-", peri = "-", len = "-";
   let pts = [];
@@ -192,167 +195,58 @@ function xuatExcel() {
     len = tong(pts).toFixed(1);
   }
 
-  const sheetInfo = [
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
     ["Tên lô", tenLo],
     ["Diện tích (ha)", area],
     ["Chu vi (m)", peri],
     ["Chiều dài (m)", len],
     ["Thời gian", new Date().toLocaleString()]
-  ];
+  ]), "ThongTin");
 
-  const sheetCoord = [["STT", "Latitude", "Longitude"]];
-  pts.forEach((p, i) => sheetCoord.push([i + 1, p.lat, p.lng]));
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetInfo), "ThongTinDo");
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetCoord), "ToaDoGPS");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ["STT", "Latitude", "Longitude"],
+    ...pts.map((p, i) => [i + 1, p.lat, p.lng])
+  ]), "ToaDo");
 
   XLSX.writeFile(wb, `DoDac_${tenLo}.xlsx`);
 }
-// ================== CUSTOM MAP CONTROLS ==================
 
-// --- NÚT ĐỊNH VỊ (ICON PHỔ BIẾN) ---
-const locateControl = L.control({ position: "topright" });
-locateControl.onAdd = function () {
-  const btn = L.DomUtil.create("button", "map-btn locate-btn");
-  btn.title = "Vị trí của tôi";
+// ===== MAP CONTROLS =====
+L.control({ position: "topright" }).onAdd = () => {
+  const b = L.DomUtil.create("button", "map-btn locate-btn");
+  b.innerHTML = `<span class="locate-icon"><span class="dot"></span></span>`;
+  b.onclick = dinhVi;
+  return b;
+}.addTo(map);
 
-  // Icon dạng crosshair (giống Google Maps)
-  btn.innerHTML = `
-    <span class="locate-icon">
-      <span class="dot"></span>
-    </span>
-  `;
+L.control({ position: "topright" }).onAdd = () => {
+  const b = L.DomUtil.create("button", "map-btn");
+  b.innerHTML = "🛰️";
+  b.onclick = doiNen;
+  return b;
+}.addTo(map);
 
-  L.DomEvent.on(btn, "click", function (e) {
-    L.DomEvent.stop(e);
-    dinhVi();
-  });
-
-  return btn;
-};
-locateControl.addTo(map);
-
-
-// --- NÚT CHUYỂN BẢN ĐỒ NỀN ---
-const basemapControl = L.control({ position: "topright" });
-basemapControl.onAdd = function () {
-  const btn = L.DomUtil.create("button", "map-btn");
-  btn.innerHTML = "🛰️";
-  btn.title = "Bật / tắt vệ tinh";
-
-  L.DomEvent.on(btn, "click", function (e) {
-    L.DomEvent.stop(e);
-    doiNen();
-  });
-
-  return btn;
-};
-basemapControl.addTo(map);
-// ===== ĐĂNG KÝ SERVICE WORKER =====
+// ===== PWA =====
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
-let deferredPrompt;
-const btnInstall = document.getElementById("btnInstall");
 
+let deferredPrompt;
 window.addEventListener("beforeinstallprompt", e => {
   e.preventDefault();
   deferredPrompt = e;
   btnInstall.style.display = "block";
 });
-
-btnInstall.addEventListener("click", async () => {
-  if (!deferredPrompt) return;
+btnInstall.onclick = () => {
   deferredPrompt.prompt();
   deferredPrompt = null;
   btnInstall.style.display = "none";
-});
+};
 
-// ===== PWA AUTO UPDATE =====
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").then(reg => {
-
-    // Có service worker mới
-    reg.addEventListener("updatefound", () => {
-      const newWorker = reg.installing;
-
-      newWorker.addEventListener("statechange", () => {
-        if (
-          newWorker.state === "installed" &&
-          navigator.serviceWorker.controller
-        ) {
-          hienThongBaoUpdate();
-        }
-      });
-    });
-
-  });
-}
-// HIỂN THỊ VERSION RA FOOTER
 fetch("sw.js")
   .then(r => r.text())
   .then(t => {
     const m = t.match(/APP_VERSION\s*=\s*"([^"]+)"/);
-    if (m) document.getElementById("appVersion").innerText = "v" + m[1];
+    if (m) appVersion.innerText = "v" + m[1];
   });
-
-function chonGPS() {
-  gpsPoints = [];
-  gpsDangDo = false;
-
-  document.getElementById("btnStartGPS").style.display = "block";
-  document.getElementById("btnFinishGPS").style.display = "none";
-
-  alert("Bấm 'Bắt đầu' rồi đi đo ngoài thực địa");
-}
-
-function batDauGPS() {
-  if (!navigator.geolocation) {
-    alert("Thiết bị không hỗ trợ GPS");
-    return;
-  }
-
-  gpsDangDo = true;
-  gpsPoints = [];
-
-  document.getElementById("btnStartGPS").style.display = "none";
-  document.getElementById("btnFinishGPS").style.display = "block";
-
-  gpsWatchId = navigator.geolocation.watchPosition(
-    pos => {
-      if (!gpsDangDo) return;
-
-      const p = [pos.coords.latitude, pos.coords.longitude];
-      gpsPoints.push(p);
-
-      drawn.clearLayers();
-      L.polyline(gpsPoints, { color: "red" }).addTo(drawn);
-    },
-    () => alert("Lỗi GPS"),
-    { enableHighAccuracy: true }
-  );
-}
-function ketThucGPS() {
-  if (!gpsDangDo) return;
-
-  gpsDangDo = false;
-  navigator.geolocation.clearWatch(gpsWatchId);
-
-  document.getElementById("btnStartGPS").style.display = "none";
-  document.getElementById("btnFinishGPS").style.display = "none";
-
-  drawn.clearLayers();
-  clearLabels();
-
-  const pts = lamThang(gpsPoints);
-
-  const layer = pts.length > 2
-    ? L.polygon(pts, { color: "green" })
-    : L.polyline(pts, { color: "blue" });
-
-  drawn.addLayer(layer);
-  thongKe(layer);
-  hienCanh(layer);
-}
-
