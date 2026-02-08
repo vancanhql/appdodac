@@ -1,22 +1,12 @@
 {
   "name": "WebApp Đo Đạc Vườn Cây",
   "short_name": "Đo Đạc",
-  "description": "Ứng dụng đo đạc diện tích, chu vi, chiều dài vườn cây bằng GPS",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e8f5e9",
   "theme_color": "#2e7d32",
-  "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
