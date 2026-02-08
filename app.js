@@ -30,9 +30,44 @@ function doiNen() {
 
 // ===== LOCATION =====
 function dinhVi() {
-  navigator.geolocation.getCurrentPosition(p => {
-    map.setView([p.coords.latitude, p.coords.longitude], 18);
-  });
+  if (!navigator.geolocation) {
+    alert("Thiết bị không hỗ trợ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const acc = pos.coords.accuracy; // mét
+
+      const latlng = [lat, lng];
+      map.setView(latlng, 18);
+
+      // Xóa marker cũ
+      if (myLocationMarker) map.removeLayer(myLocationMarker);
+      if (myAccuracyCircle) map.removeLayer(myAccuracyCircle);
+
+      // Chấm vị trí (to, rõ)
+      myLocationMarker = L.circleMarker(latlng, {
+        radius: 8,                 // 👈 TO HƠN
+        color: "#1e88e5",
+        fillColor: "#2196f3",
+        fillOpacity: 1
+      }).addTo(map);
+
+      // Vòng tròn sai số GPS
+      myAccuracyCircle = L.circle(latlng, {
+        radius: acc,
+        color: "#1e88e5",
+        weight: 1,
+        fillColor: "#90caf9",
+        fillOpacity: 0.25
+      }).addTo(map);
+    },
+    () => alert("Không lấy được vị trí GPS"),
+    { enableHighAccuracy: true }
+  );
 }
 
 // ===== DRAW HAND =====
@@ -259,4 +294,5 @@ fetch("sw.js")
     const m = t.match(/APP_VERSION\s*=\s*"([^"]+)"/);
     if (m) document.getElementById("appVersion").innerText = "v" + m[1];
   });
+
 
